@@ -587,6 +587,33 @@ if (window.Inputmask) {
     });
 }
 
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('../sw.js', { scope: '/' }).then((reg) => {
+        if (reg.installing) {
+            console.log('Service worker installing');
+        } else if(reg.waiting) {
+            console.log('Service worker installed');
+        } else if(reg.active) {
+            console.log('Service worker active');
+        }
+
+    }).catch((error) => {
+        console.log('Registration failed with ' + error); // Registration failed
+    });
+
+    // Communicate with the service worker using MessageChannel API.
+    function sendMessage(message) {
+        return new Promise((resolve, reject) => {
+            const messageChannel = new MessageChannel();
+            messageChannel.port1.onmessage = function(event) {
+                resolve(`Direct message from SW: ${event.data}`);
+            };
+
+            navigator.serviceWorker.controller.postMessage(message, [messageChannel.port2])
+        });
+    }
+}
+
 /* doesn't work because Chart.js is loaded as needed on screens, and after this loads, leaving commented here as would be nice:
 if (window.Chart) {
     Chart.defaults.global.tooltips.callbacks.label = function(tooltipItem, data) {
