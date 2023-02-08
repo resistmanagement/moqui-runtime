@@ -1852,9 +1852,38 @@ Vue.component('m-chart', {
     mounted: function() {
         var vm = this;
         moqui.loadScript('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js', function(err) {
-            if (err) return;
+            if (err) {
+                console.error("Error loading m-chart script: " + err);
+                return;
+            }
             vm.instance = new Chart(vm.$refs.canvas, vm.config);
         }, function() { return !!window.Chart; });
+    },
+    watch: {
+        config: function (val) {
+            if (this.instance) {
+                // console.info("updating m-chart")
+                if (val.type) this.instance.type = val.type;
+                if (val.labels) this.instance.labels = val.labels;
+                if (val.data) this.instance.data = val.data;
+                if (val.options) this.instance.options = val.options;
+                this.instance.update();
+            }
+        }
+    }
+});
+/* Lazy loading Mermaid JS wrapper component; for config options see https://mermaid.js.org/config/usage.html */
+Vue.component('m-mermaid', {
+    name: 'mMermaid',
+    props: { config:{type:Object,'default': function() { return {startOnLoad:true,securityLevel:'loose'} }},
+        height:{type:String,'default':'400px'}, width:{type:String,'default':'100%'} },
+    template: '<pre ref="mermaid" class="mermaid" :style="{height:height,width:width}"><slot></slot></pre>',
+    mounted: function() {
+        var vm = this;
+        moqui.loadScript('https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.3.0/mermaid.min.js', function(err) {
+            if (err) return;
+            mermaid.init(vm.config, vm.$refs.mermaid);
+        }, function() { return !!window.mermaid; });
     }
 });
 /* Lazy loading CK Editor wrapper component, based on https://github.com/ckeditor/ckeditor4-vue */
@@ -2089,7 +2118,7 @@ moqui.webrootVue = new Vue({
         lastNavTime:Date.now(), loading:0, currentLoadRequest:null, activeContainers:{}, urlListeners:[],
         moquiSessionToken:"", appHost:"", appRootPath:"", userId:"", username:"", locale:"en",
         reLoginShow:false, reLoginPassword:null, reLoginMfaData:null, reLoginOtp:null,
-        notificationClient:null, qzVue:null, leftOpen:false, moqui:moqui },
+        notificationClient:null, sessionTokenBc:null, qzVue:null, leftOpen:false, moqui:moqui },
     methods: {
         setUrl: function(url, bodyParameters, onComplete) {
             // cancel current load if needed
@@ -2279,16 +2308,29 @@ moqui.webrootVue = new Vue({
             // update the session token, new session after login (along with xhrFields:{withCredentials:true} for cookie)
             var sessionToken = jqXHR.getResponseHeader("X-CSRF-Token");
             if (sessionToken && sessionToken.length && sessionToken !== this.moquiSessionToken) {
-                console.log("Updating session token")
+                console.log("Updating session token from jqXHR, sending to BroadcastChannel")
+                this.moquiSessionToken = sessionToken;
+                this.sessionTokenBc.postMessage(sessionToken);
+            }
+        },
+        receiveBcCsrfToken: function(event) {
+            var sessionToken = event.data;
+            if (sessionToken && sessionToken.length && this.moquiSessionToken !== sessionToken) {
+                console.log("Updating session token from BroadcastChannel")
                 this.moquiSessionToken = sessionToken;
             }
         },
         reLoginCheckShow: function() {
+            this.reLoginShowDialog();
+            /* NOTE DEJ-2022-12 removing use of the userInfo endpoint which is commented out for security reasons:
             // before showing the Re-Login dialog do a GET request without session token to see if there is a new one
             $.ajax({ type:'GET', url:(this.appRootPath + '/rest/userInfo'),
                 error:this.reLoginCheckResponseError, success:this.reLoginCheckResponseSuccess,
                 dataType:'json', headers:{Accept:'application/json'}, xhrFields:{withCredentials:true} });
+
+             */
         },
+        /* NOTE DEJ-2022-12 removing use of the userInfo endpoint which is commented out for security reasons:
         reLoginCheckResponseSuccess: function(resp, status, jqXHR) {
             if (resp.username && resp.sessionToken) {
                 this.moquiSessionToken = resp.sessionToken;
@@ -2307,7 +2349,7 @@ moqui.webrootVue = new Vue({
             } else {
                 var resp = responseText ? responseText : jqXHR.responseText;
                 var respObj;
-                try { respObj = JSON.parse(resp); } catch (e) { /* ignore error, don't always expect it to be JSON */ }
+                try { respObj = JSON.parse(resp); } catch (e) { } // ignore error, don't always expect it to be JSON
                 if (respObj && moqui.isPlainObject(respObj)) {
                     moqui.notifyMessages(respObj.messageInfos, respObj.errors, respObj.validationErrors);
                 } else if (resp && moqui.isString(resp) && resp.length) {
@@ -2315,6 +2357,7 @@ moqui.webrootVue = new Vue({
                 }
             }
         },
+        */
         reLoginShowDialog: function() {
             // make sure there is no MFA Data (would skip the login with password step)
             this.reLoginMfaData = null;
@@ -2477,6 +2520,9 @@ moqui.webrootVue = new Vue({
         this.$q.dark.set(confDarkMode === "true");
 
         this.notificationClient = new moqui.NotificationClient((location.protocol === 'https:' ? 'wss://' : 'ws://') + this.appHost + this.appRootPath + "/notws");
+        // open BroadcastChannel to share session token between tabs/windows on the same domain (see https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API)
+        this.sessionTokenBc = new BroadcastChannel("SessionToken");
+        this.sessionTokenBc.onmessage = this.receiveBcCsrfToken;
 
         var navPluginUrlList = [];
         $('.confNavPluginUrl').each(function(idx, el) { navPluginUrlList.push($(el).val()); });
@@ -2504,6 +2550,9 @@ moqui.webrootVue = new Vue({
                 }
             });
         }
+    },
+    beforeDestroy: function() {
+        this.sessionTokenBc.close();
     }
 
 });
