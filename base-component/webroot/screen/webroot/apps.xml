@@ -54,7 +54,7 @@ along with this software (see the LICENSE.md file). If not, see
                     ],
                     // TODO: Figure out how to get the current screen and display the url here and possible use it as an id?
                     start_url: '/',
-                    display: "fullscreen",
+                    display: "minimal-ui",
                     prefer_related_applications: true
             ];
             ec.web.sendJsonResponse(manifestOut)

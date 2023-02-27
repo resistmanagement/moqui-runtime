@@ -169,13 +169,13 @@ along with this software (see the LICENSE.md file). If not, see
             <m-subscreens-active></m-subscreens-active>
         </q-page></q-page-container>
 
-        <q-footer reveal bordered class="bg-grey-9 text-white row q-pa-xs" id="footer">
-            <#assign footerItemList = sri.getThemeValues("STRT_FOOTER_ITEM")>
-            <#list footerItemList! as footerItem>
-                <#assign footerItemTemplate = footerItem?interpret>
-                <@footerItemTemplate/>
-            </#list>
-        </q-footer>
+<#--        <q-footer reveal bordered class="bg-grey-9 text-white row q-pa-xs" id="footer">-->
+<#--            <#assign footerItemList = sri.getThemeValues("STRT_FOOTER_ITEM")>-->
+<#--            <#list footerItemList! as footerItem>-->
+<#--                <#assign footerItemTemplate = footerItem?interpret>-->
+<#--                <@footerItemTemplate/>-->
+<#--            </#list>-->
+<#--        </q-footer>-->
     </q-layout>
     <#-- re-login dialog -->
     <m-dialog v-model="reLoginShow" width="400" title="${ec.l10n.localize("Re-Login")}">
