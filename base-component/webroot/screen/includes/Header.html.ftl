@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <#if html_keywords?has_content><meta name="keywords" content="${html_keywords}"></#if>
     <#if html_description?has_content><meta name="description" content="${html_description}"></#if>
     <#assign parentMenuName = (sri.screenUrlInfo.parentScreen.getDefaultMenuName())!"">
