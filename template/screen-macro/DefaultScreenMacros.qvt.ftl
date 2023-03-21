@@ -170,7 +170,7 @@ ${sri.renderSectionInclude(.node)}
         <#assign urlInstance = sri.makeUrlByType(.node["@transition"], "transition", .node, "true")>
         <#assign ddDivId><@nodeId .node/></#assign>
         <#if urlInstance.disableLink>
-            <q-btn disabled dense outline no-caps icon="open_in_new" label="${buttonText}" color="<@getQuasarColor ec.getResource().expandNoL10n(.node["@type"]!"primary", "")/>" class="${ec.getResource().expandNoL10n(.node["@button-style"]!"", "")}"></q-btn>
+            <q-btn disabled dense no-caps icon="open_in_new" label="${buttonText}" color="<@getQuasarColor ec.getResource().expandNoL10n(.node["@type"]!"primary", "")/>" class="${ec.getResource().expandNoL10n(.node["@button-style"]!"", "")}"></q-btn>
         <#else>
             <m-dynamic-dialog id="${ddDivId}" url="${urlInstance.urlWithParams}" color="<@getQuasarColor ec.getResource().expandNoL10n(.node["@type"]!"primary", "")/>" width="${.node["@width"]!""}"
                     button-text="${buttonText}" button-class="${ec.getResource().expandNoL10n(.node["@button-style"]!"", "")}" title="${title}"<#if _openDialog! == ddDivId> :openDialog="true"</#if>></m-dynamic-dialog>
@@ -246,7 +246,7 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
 
     <#if urlInstance.disableLink>
         <span>
-            <q-btn dense no-caps disabled <#if linkNode["@link-type"]! != "anchor" && linkNode["@link-type"]! != "hidden-form-link">outline<#else>flat</#if><#rt>
+            <q-btn dense outline no-caps disabled <#if linkNode["@link-type"]! != "anchor" && linkNode["@link-type"]! != "hidden-form-link">outline<#else>flat</#if><#rt>
                     <#t> class="m-link<#if .node["@style"]?has_content> ${ec.getResource().expandNoL10n(.node["@style"], "")}</#if>"
                     <#t><#if linkFormId?has_content> id="${linkFormId}"</#if><#if linkText?has_content> label="${linkText}"</#if>>
                 <#if iconClass?has_content><i class="${iconClass}"></i></#if><#if linkNode["image"]?has_content><#visit linkNode["image"][0]></#if>
@@ -283,7 +283,7 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
             <#t></${linkElement}>
         <#else>
             <#if linkFormId?has_content>
-            <#rt><q-btn dense outline no-caps type="submit" form="${linkFormId}" id="${linkFormId}_button" color="<@getQuasarColor linkNode["@btn-type"]!"primary"/>"
+            <#rt><q-btn dense no-caps type="submit" form="${linkFormId}" id="${linkFormId}_button" color="<@getQuasarColor linkNode["@btn-type"]!"primary"/>"
                     <#t> class="<#if linkNode["@style"]?has_content>${ec.getResource().expandNoL10n(linkNode["@style"], "")}</#if>"
                     <#t><#if confirmationMessage?has_content> onclick="return confirm('${confirmationMessage?js_string}')"</#if>>
                     <#t><#if linkNode["@tooltip"]?has_content><q-tooltip>${ec.getResource().expand(linkNode["@tooltip"], "")}</q-tooltip></#if>
@@ -733,7 +733,7 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
                 <#assign headerFormId = formId + "_header">
                 <#assign headerFormButtonText = ec.getL10n().localize("Find Options")>
                 <m-container-dialog id="${formId + "_hdialog"}" title="${headerFormButtonText}">
-                    <template v-slot:button><q-btn dense outline no-caps label="${headerFormButtonText}" icon="search"></q-btn></template>
+                    <template v-slot:button><q-btn dense no-caps label="${headerFormButtonText}" icon="search"></q-btn></template>
                     <#-- Find Parameters Form -->
                     <#assign curUrlInstance = sri.getCurrentScreenUrl()>
                     <#assign skipFormSave = skipForm!false>
@@ -755,7 +755,7 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
                     <m-form-link name="${headerFormId}" id="${headerFormId}" action="${curUrlInstance.path}" v-slot:default="formProps"<#rt>
                             <#t> :fields-initial="${Static["org.moqui.util.WebUtilities"].fieldValuesEncodeHtmlJsSafe(sri.getFormListHeaderValues(formNode))}">
                         <div class="q-mx-sm">
-                            <q-btn dense outline no-caps name="clearParameters" @click.prevent="formProps.clearForm" label="${ec.getL10n().localize("Clear Parameters")}"></q-btn>
+                            <q-btn dense no-caps name="clearParameters" @click.prevent="formProps.clearForm" label="${ec.getL10n().localize("Clear Parameters")}"></q-btn>
 
                             <#-- Always add an orderByField to select one or more columns to order by -->
                             <q-select dense outlined options-dense multiple clearable emit-value map-options v-model="formProps.fields.orderByField"
@@ -810,7 +810,7 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
                     <#sep>,</#list>
                 </#assign>
                 <m-container-dialog id="${selectColumnsDialogId}" title="${ec.l10n.localize("Column Fields")}">
-                    <template v-slot:button><q-btn dense outline no-caps label="${ec.getL10n().localize("Columns")}" icon="table_chart"></q-btn></template>
+                    <template v-slot:button><q-btn dense no-caps label="${ec.getL10n().localize("Columns")}" icon="table_chart"></q-btn></template>
                     <m-form-column-config id="${formId}_SelColsForm" action="${sri.buildUrl("formSelectColumns").path}"
                         <#if currentFindUrlParms?has_content> :find-parameters="{<#list currentFindUrlParms.keySet() as parmName>'${parmName}':'${Static["org.moqui.util.WebUtilities"].encodeHtmlJsSafe(currentFindUrlParms.get(parmName)!)}'<#sep>,</#list>}"</#if>
                         :columns-initial="[{id:'hidden', label:'${ec.l10n.localize("Do Not Display")}', children:[${hiddenChildren}]},${columnFieldInfo}]"
@@ -822,7 +822,7 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
             <#if isSavedFinds>
                 <#assign savedFormButtonText = ec.getL10n().localize("Saved Finds")>
                 <m-container-dialog id="${formId + "_sfdialog"}" title="${savedFormButtonText}">
-                    <template v-slot:button><q-btn dense outline no-caps label="${savedFormButtonText}" icon="find_in_page"></q-btn></template>
+                    <template v-slot:button><q-btn dense no-caps label="${savedFormButtonText}" icon="find_in_page"></q-btn></template>
                     <#assign activeFormListFind = formListInfo.getFormInstance().getActiveFormListFind(ec)!>
                     <#assign formSaveFindUrl = sri.buildUrl("formSaveFind").path>
                     <#assign descLabel = ec.getL10n().localize("Description")>
@@ -841,7 +841,7 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
                                              :options="[{value:'xlsx',label:'XLSX'},{value:'csv',label:'CSV'},{value:'xsl-fo',label:'PDF'}]"></m-drop-down>
                                 <m-drop-down v-model="formProps.fields.cronSelected" name="cronSelected" label="${ec.getL10n().localize("Schedule")}" id="${formId}_SCHED_cronSelected"
                                              :options="[{value:'0 0 6 ? * MON-FRI',label:'Monday-Friday'},{value:'0 0 6 ? * *',label:'Every Day'},{value:'0 0 6 ? * MON',label:'Monday Only'},{value:'0 0 6 1 * ?',label:'Monthly'}]"></m-drop-down>
-                                <q-btn dense outline no-caps type="submit" name="ScheduleFind" onclick="return confirm('${ec.getL10n().localize("Setup a schedule to send this saved find to you by email?")}');" label="${ec.getL10n().localize("Schedule")}"></q-btn>
+                                <q-btn dense no-caps type="submit" name="ScheduleFind" onclick="return confirm('${ec.getL10n().localize("Setup a schedule to send this saved find to you by email?")}');" label="${ec.getL10n().localize("Schedule")}"></q-btn>
                             </m-form>
                         </#if>
                     </#if>
@@ -854,7 +854,7 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
                         <#t><#list currentFindUrlParms.keySet() as parmName>'${parmName}':'${Static["org.moqui.util.WebUtilities"].encodeHtmlJsSafe(currentFindUrlParms.get(parmName)!)}',</#list>}">
                             <div class="big-row">
                                 <div class="q-my-auto big-row-item"><q-input v-model="formProps.fields._findDescription" dense outlined stack-label label="${descLabel}" size="30" name="_findDescription" id="${formId}_NewFind_description" required="required"></q-input></div>
-                                <div class="on-right q-my-auto big-row-item"><q-btn dense outline no-caps type="submit" label="${ec.getL10n().localize("Save New Find")}"></q-btn></div>
+                                <div class="on-right q-my-auto big-row-item"><q-btn dense no-caps type="submit" label="${ec.getL10n().localize("Save New Find")}"></q-btn></div>
                             </div>
                         </m-form>
                     <#else>
@@ -875,24 +875,24 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
                                             <#t>_findDescription:'${Static["org.moqui.util.WebUtilities"].encodeHtmlJsSafe(formListFind.description?html)}',
                                             <#t><#list currentFindUrlParms.keySet() as parmName>'${parmName}':'${Static["org.moqui.util.WebUtilities"].encodeHtmlJsSafe(currentFindUrlParms.get(parmName)!)}',</#list>}">
                                     <div class="q-my-auto big-row-item"><q-input v-model="formProps.fields._findDescription" dense outlined stack-label label="${descLabel}" size="30" name="_findDescription" id="${saveFindFormId}_description" required="required"></q-input></div>
-                                    <div class="on-right q-my-auto big-row-item"><q-btn dense outline no-caps type="submit" name="UpdateFind" label="${ec.getL10n().localize("Update")}">
+                                    <div class="on-right q-my-auto big-row-item"><q-btn dense no-caps type="submit" name="UpdateFind" label="${ec.getL10n().localize("Update")}">
                                             <q-tooltip>Update saved find using description and current find parameters</q-tooltip>
                                         </q-btn></div>
                                     <#if userFindInfo.isByUserId == "true">
                                         <div class="q-my-auto big-row-item"><q-btn dense flat no-caps type="submit" name="DeleteFind" color="negative" icon="delete_forever" onclick="return confirm('${ec.getL10n().localize("Delete")} ${formListFind.description?js_string}?');"></q-btn></div>
                                     </#if>
-                                    <div class="q-my-auto big-row-item"><q-btn dense outline no-caps to="${doFindUrl.pathWithParams}" label="${ec.getL10n().localize("Do Find")}"></q-btn></div>
+                                    <div class="q-my-auto big-row-item"><q-btn dense no-caps to="${doFindUrl.pathWithParams}" label="${ec.getL10n().localize("Do Find")}"></q-btn></div>
                                     <#if userDefaultFormListFindId == formListFind.formListFindId>
-                                        <div class="q-my-auto big-row-item"><q-btn dense outline no-caps type="submit" name="ClearDefault" color="info" label="${ec.getL10n().localize("Clear Default")}"></q-btn></div>
+                                        <div class="q-my-auto big-row-item"><q-btn dense no-caps type="submit" name="ClearDefault" color="info" label="${ec.getL10n().localize("Clear Default")}"></q-btn></div>
                                     <#else>
-                                        <div class="q-my-auto big-row-item"><q-btn dense outline no-caps type="submit" name="MakeDefault" label="${ec.getL10n().localize("Make Default")}"></q-btn></div>
+                                        <div class="q-my-auto big-row-item"><q-btn dense no-caps type="submit" name="MakeDefault" label="${ec.getL10n().localize("Make Default")}"></q-btn></div>
                                     </#if>
                                 </m-form>
                             </div>
                         <#else>
                             <div class="big-row">
-                                <div class="q-my-auto big-row-item on-left"><q-input dense outlined readonly value="${formListFind.description?html}"></q-input></div>
-                                <div class="q-my-auto big-row-item"><q-btn dense outline no-caps to="${doFindUrl.pathWithParams}" label="${ec.getL10n().localize("Do Find")}"></q-btn></div>
+                                <div class="q-my-auto big-row-item on-left"><q-input dense readonly value="${formListFind.description?html}"></q-input></div>
+                                <div class="q-my-auto big-row-item"><q-btn dense no-caps to="${doFindUrl.pathWithParams}" label="${ec.getL10n().localize("Do Find")}"></q-btn></div>
                                 <m-form id="${saveFindFormId}" action="${formSaveFindUrl}" :no-validate="true"
                                         :fields-initial="{formListFindId:'${formListFind.formListFindId}', formLocation:'${Static["org.moqui.util.WebUtilities"].encodeHtmlJsSafe(formListInfo.getSavedFindFullLocation())}'}">
                                     <#if userFindInfo.isByUserId == "true">
@@ -900,9 +900,9 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
                                                 onclick="return confirm('${ec.getL10n().localize("Delete")} ${formListFind.description?js_string}?');"></q-btn></div>
                                     </#if>
                                     <#if userDefaultFormListFindId == formListFind.formListFindId>
-                                        <div class="q-my-auto big-row-item"><q-btn dense outline no-caps type="submit" name="ClearDefault" color="info" label="${ec.getL10n().localize("Clear Default")}"></q-btn></div>
+                                        <div class="q-my-auto big-row-item"><q-btn dense no-caps type="submit" name="ClearDefault" color="info" label="${ec.getL10n().localize("Clear Default")}"></q-btn></div>
                                     <#else>
-                                        <div class="q-my-auto big-row-item"><q-btn dense outline no-caps type="submit" name="MakeDefault" label="${ec.getL10n().localize("Make Default")}"></q-btn></div>
+                                        <div class="q-my-auto big-row-item"><q-btn dense no-caps type="submit" name="MakeDefault" label="${ec.getL10n().localize("Make Default")}"></q-btn></div>
                                     </#if>
                                 </m-form>
                             </div>
@@ -914,12 +914,12 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
             <#if formNode["@show-csv-button"]! == "true">
                 <#assign csvLinkUrl = sri.getScreenUrlInstance().cloneUrlInstance().addParameter("renderMode", "csv")
                         .addParameter("pageNoLimit", "true").addParameter("lastStandalone", "true").addParameter("saveFilename", formNode["@name"] + ".csv")>
-                <q-btn dense outline type="a" href="${csvLinkUrl.getUrlWithParams()}" label="${ec.getL10n().localize("CSV")}"></q-btn>
+                <q-btn dense type="a" href="${csvLinkUrl.getUrlWithParams()}" label="${ec.getL10n().localize("CSV")}"></q-btn>
             </#if>
             <#if formNode["@show-xlsx-button"]! == "true" && ec.screen.isRenderModeValid("xlsx")>
                 <#assign xlsxLinkUrl = sri.getScreenUrlInstance().cloneUrlInstance().addParameter("renderMode", "xlsx")
                         .addParameter("pageNoLimit", "true").addParameter("lastStandalone", "true").addParameter("saveFilename", formNode["@name"] + ".xlsx")>
-                <q-btn dense outline type="a" href="${xlsxLinkUrl.getUrlWithParams()}" label="${ec.getL10n().localize("XLS")}"></q-btn>
+                <q-btn dense type="a" href="${xlsxLinkUrl.getUrlWithParams()}" label="${ec.getL10n().localize("XLS")}"></q-btn>
             </#if>
             <#if formNode["@show-text-button"]! == "true">
                 <#assign showTextDialogId = formId + "_TextDialog">
@@ -1424,7 +1424,7 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
             <tr class="form-list-nav-row"><th colspan="${numColumns}"><div class="row">
                 <q-space></q-space>
                 <#if formNode["@show-all-button"]! == "true" || formNode["@show-page-size"]! == "true">
-                    <span class="on-left q-my-auto"><q-btn-dropdown dense outline no-caps label="${context[listName + "PageSize"]?c}"><q-list dense>
+                    <span class="on-left q-my-auto"><q-btn-dropdown dense no-caps label="${context[listName + "PageSize"]?c}"><q-list dense>
                         <#list [10,20,50,100,200,500] as curPageSize>
                             <#assign pageSizeUrl = sri.getScreenUrlInstance().cloneUrlInstance().addParameter("pageSize", curPageSize?c)>
                             <q-item clickable v-close-popup><q-item-section>
@@ -1956,14 +1956,14 @@ a => A, d => D, y => Y
 </div>
 </#macro>
 
-<#macro reset><q-btn dense outline type="reset" name="<@fieldName .node/>" value="<@fieldTitle .node?parent/>" id="<@fieldId .node/>"<#if .node["@icon"]?has_content> iconcls="ui-icon-${.node["@icon"]}"</#if><#if .node?parent["@tooltip"]?has_content> data-toggle="tooltip" title="${ec.getResource().expand(.node?parent["@tooltip"], "")}"</#if><#if ownerForm?has_content> form="${ownerForm}"</#if>></#macro>
+<#macro reset><q-btn dense type="reset" name="<@fieldName .node/>" value="<@fieldTitle .node?parent/>" id="<@fieldId .node/>"<#if .node["@icon"]?has_content> iconcls="ui-icon-${.node["@icon"]}"</#if><#if .node?parent["@tooltip"]?has_content> data-toggle="tooltip" title="${ec.getResource().expand(.node?parent["@tooltip"], "")}"</#if><#if ownerForm?has_content> form="${ownerForm}"</#if>></#macro>
 
 <#macro submit>
     <#assign confirmationMessage = ec.getResource().expand(.node["@confirmation"]!, "")/>
     <#assign buttonText><#if .node["@text"]?has_content>${ec.getResource().expand(.node["@text"], "")}<#else><@fieldTitle .node?parent/></#if></#assign>
     <#assign iconClass = .node["@icon"]!>
     <#if !iconClass?has_content><#assign iconClass = sri.getThemeIconClass(buttonText)!></#if>
-    <q-btn dense outline no-caps type="submit" name="<@fieldName .node/>" value="<@fieldName .node/>" id="<@fieldId .node/>"<#rt>
+    <q-btn dense no-caps type="submit" name="<@fieldName .node/>" value="<@fieldName .node/>" id="<@fieldId .node/>"<#rt>
             <#t> color="<@getQuasarColor .node["@type"]!"primary"/>"<#if formDisabled!> disabled</#if>
             <#t><#if confirmationMessage?has_content> onclick="return confirm('${confirmationMessage?js_string}');"</#if>
             <#t><#if ownerForm?has_content> form="${ownerForm}"</#if><#if !.node["image"]?has_content> label="${buttonText}"</#if>>
